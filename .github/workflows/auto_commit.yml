@@ -27,9 +27,11 @@ jobs:
     - name: Update content and commit
       run: |
         export LC_ALL=en_US.UTF-8
-        echo "Adding content on $(date +"%Y-%m-%d %H:%M:%S")" >> content.txt
+        export LANG=en_US.UTF-8
+        export LANGUAGE=en_US.UTF-8
+        echo "Adding content on $(date +"%Y-%m-%d %H:%M:%S")" | iconv -t UTF-8 >> content.txt
         git add content.txt
-        git commit -m "Auto update on $(date +"%Y-%m-%d %H:%M:%S")"
+        git commit -m "Auto update with current date and time on $(date +"%Y-%m-%d %H:%M:%S")"
 
     # Push changes
     - name: Push changes
