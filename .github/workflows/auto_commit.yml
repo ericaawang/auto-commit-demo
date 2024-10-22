@@ -27,6 +27,7 @@ jobs:
     # Modify the file and commit changes
     - name: Update content and commit
       run: |
+        export LC_ALL=en_US.UTF-8
         echo "Adding content on $(date)" >> content.txt
         git add content.txt
         git commit -m "Auto update on $(date)"
