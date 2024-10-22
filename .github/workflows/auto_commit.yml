@@ -1,0 +1,39 @@
+name: Auto Commit
+
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    # Runs every day at 1:00 AM UTC
+    - cron: '0 1 * * *'
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Check out the repository code
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    # Configure Git user
+    - name: Set up Git
+      run: |
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+    # Modify the file and commit changes
+    - name: Update content and commit
+      run: |
+        echo "Adding content on $(date)" >> content.txt
+        git add content.txt
+        git commit -m "Auto update on $(date)"
+
+    # Push changes
+    - name: Push changes
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git HEAD:main
