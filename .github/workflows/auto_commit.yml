@@ -3,7 +3,7 @@ name: Daily Random Commits
 on:
   schedule:
     - cron: '0 0 * * *' # 每天定时触发
-
+  workflow_dispatch: {}
 permissions:
   contents: write
 
