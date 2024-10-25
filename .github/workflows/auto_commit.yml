@@ -1,40 +1,40 @@
-name: Daily Random Commits
+name: Auto Commit
 
 on:
+  push:
+    branches:
+      - main
   schedule:
-    - cron: '0 0 * * *' # 每天定时触发
+    # Runs every day at 1:00 AM UTC
+    - cron: '0 1 * * *'
   workflow_dispatch: {}
-permissions:
-  contents: write
 
 jobs:
-  random-commits:
+  build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+    # Check out the repository code
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-      - name: Randomly commit 24 times in a day
-        run: |
-          for i in {1..24}
-          do
-            # 在每次提交前等待，最多等待1800秒 (30分钟)
-            sleep $(( RANDOM % 1800 ))
+    # Configure Git user
+    - name: Set up Git
+      run: |
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
 
-            # 增加变更内容
-            echo "${date}" >> daily_commit.txt
+    # Modify the file and commit changes
+    - name: Update content and commit
+      run: |
+        export LC_ALL=en_US.UTF-8
+        echo "Adding content on $(date)" >> content.txt
+        git add content.txt
+        git commit -m "Auto update on $(date)"
 
-            # 设置提交
-            git config --local user.name "github-actions[bot]"
-            git config --local user.email "github-actions[bot]@users.noreply.github.com"
-            git add .
-            git commit -m "Random commit #$i $(date)"
-
-            # 推送变更
-            git push
-          done
-
-      - name: Push changes
-        uses: ad-m/github-push-action@v0.6.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+    # Push changes
+    - name: Push changes
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git HEAD:main
